@@ -8,6 +8,7 @@ from langchain_core.messages import BaseMessage,HumanMessage
 from langgraph.graph import StateGraph,START,END
 from langgraph.graph.message import add_messages
 from langgraph.checkpoint.memory import InMemorySaver
+os.environ["LANGSMITH_PROJECT"]="LangGraph Chatbot"
 load_dotenv()
 llm=ChatGroq(
     model="groq/compound-mini",

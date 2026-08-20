@@ -1,7 +1,9 @@
 import streamlit as st
 from backend_with_sqllite import workflow,retrive_all_thread_id
 import uuid
+import os
 from langchain_core.messages import HumanMessage,AIMessage
+os.environ["LANGSMITH_PROJECT"]="LangGraph Chatbot"
 st.title("Agent Chatbot")
 def uuid_generator():
     return str(uuid.uuid4())
@@ -48,7 +50,7 @@ for thread_id in st.session_state.thread_id_list:
         st.rerun()
 
 
-CONFIG={'configurable':{"thread_id":st.session_state.thread_id}}
+CONFIG={'configurable':{"thread_id":st.session_state.thread_id},"metadata":{"thread_id":st.session_state.thread_id},"run_name":f"chat_{st.session_state.thread_id}"}
 
 user_input = st.chat_input("Type your message here...")
 

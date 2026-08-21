@@ -2,7 +2,10 @@ import streamlit as st
 from backend_with_sqllite_with_tool_calling import workflow,retrive_all_thread_id
 import uuid
 import os
-from langchain_core.messages import HumanMessage,AIMessage
+import time
+
+from langchain_core.messages import HumanMessage,AIMessage,ToolMessage
+from langchain_core.tools import Tool
 os.environ["LANGSMITH_PROJECT"]="LangGraph Chatbot with Tool Calling"
 st.title("Agent Chatbot")
 def uuid_generator():
@@ -59,8 +62,24 @@ if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.write(user_input)
-    response=workflow.stream({"messages":[HumanMessage(content=user_input)]},config=CONFIG,stream_mode='messages') 
+    # response=workflow.stream({"messages":[HumanMessage(content=user_input)]},config=CONFIG,stream_mode='messages') 
     with st.chat_message("assistant"):
+        # print(response)
+        for messages,metadata in workflow.stream({"messages":[HumanMessage(content=user_input)]},config=CONFIG,stream_mode='messages'):
+            if(isinstance(messages,ToolMessage)):
+                with st.status("Working", expanded=True) as status:
+                    st.write("⚙️ Searching for tool ...")
+                    time.sleep(2)
+                    if(messages.name=="duckduckgo_search"):
+                        tool="🌐"
+                    if(messages.name=="calculator"):
+                        tool="🧮"
+                    else:
+                        tool="🛠️"
+                    st.write(f"{tool} Tools_called- {messages.name}")
+                    time.sleep(1)
+                    st.write("done ...")
+                    time.sleep(1)
         ai_message=st.write_stream(messages.content for messages ,metadata in workflow.stream({"messages":[HumanMessage(content=user_input)]},config=CONFIG,stream_mode='messages')if isinstance(messages, AIMessage)
     and messages.content)
         st.session_state.messages.append({"role": "assistant", "content": ai_message})

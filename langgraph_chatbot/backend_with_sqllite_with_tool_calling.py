@@ -22,7 +22,7 @@ llm=ChatGroq(
 )
 search=DuckDuckGoSearchRun()
 @tool
-def calculator(num1:int,num2:int,operation:str)->float:
+def calculator(num1:int,num2:int,operation:Literal["+","-","*","/"])->float:
     """Tool for performing basic arithmetic operations."""
     if operation == "+":
         return num1 + num2
